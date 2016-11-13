@@ -3,7 +3,7 @@ Utilities related to the new version 3 Audio Units
 
 ### SimplePlayEngine+Recording.swift
 
-SimplePlayEngine utility extension to manage recording of the main mixer node output to a file.The SimplePlayEngine class is provided by Apple in the sample [AudioUnitV3Example: A Basic AudioUnit Extension and Host Implementation"](
+SimplePlayEngine utility extension to manage recording of the main mixer node output to a file. The SimplePlayEngine class is provided by Apple in the sample [AudioUnitV3Example: A Basic AudioUnit Extension and Host Implementation"](
 https://developer.apple.com/library/content/samplecode/AudioUnitV3Example/Introduction/Intro.html)
 
 Usage (Swift):
@@ -17,9 +17,9 @@ if (!self.engine.isRecording) {
 
 Usage (Objective-C):
 ```objective-c
-if (![playEngine isRecording]) {
-	[playEngine startRecordingToURL: [NSURL URLWithString:@"YOUR_PATH/output.aif"]];
+if (![engine isRecording]) {
+	[engine startRecordingToURL: [NSURL URLWithString:@"YOUR_PATH/output.aif"]];
 } else {
-	[playEngine stopRecording];
+	[engine stopRecording];
 }
 ```
