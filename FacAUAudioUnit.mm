@@ -26,6 +26,12 @@
 #define FILE_EXTENSION "preset"
 #define FILE_FORMAT "FAC_MAGIC_NUMBER"
 
+#if TARGET_OS_IPHONE
+#define PRESETS_FOLDER "presets"
+#elif TARGET_OS_MAC
+#define PRESETS_FOLDER "FAC/App/presets"
+#endif
+
 #pragma mark - FacAUAudioUnit : AUAudioUnit
 
 @implementation FacAUAudioUnit {
@@ -45,7 +51,18 @@
         return nil;
     }
     
-    _documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    _documentsPath = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:@PRESETS_FOLDER];
+    
+    #if TARGET_OS_MAC
+    NSError * error = nil;
+    [[NSFileManager defaultManager] createDirectoryAtPath:_documentsPath
+                              withIntermediateDirectories:YES
+                                               attributes:nil
+                                                    error:&error];
+    if (error != nil) {
+        NSLog(@"[FacAUAudioUnit::init] %@", error.description);
+    }
+    #endif
     
     return self;
 }
