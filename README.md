@@ -19,10 +19,12 @@ Usage in Filter sample code provided by Apple:
 2. InstrumentDemo.mm
 ```objective-c 
 - (instancetype)initWithComponentDescription:(AudioComponentDescription)componentDescription options:(AudioComponentInstantiationOptions)options error:(NSError **)outError {
+    self = [super initWithComponentDescription:componentDescription options:options error:outError presetFolderName:@"Manufacter/YourFolder" presetVersion:@"1.0"];
+    if (self == nil) { return nil; }
 	//...
 
-	[self loadPresets];	
-	return self;
+    [self loadPresets];	
+    return self;
 }
 ```
 
@@ -40,10 +42,10 @@ Usage in Filter sample code provided by Apple:
 {
   "Name" : "slow",
   "Description" : "Demo slow preset",
-  "Format" : "FAC_MAGIC_NUMBER",
+  "UID" : "YOUR_UID",
   "IsDefault" : false,
   "Version" : "1.0",
-  "Date" : "Nov 20, 2016, 4:50:55 PM",
+  "Date" : "Dec 20, 2016, 21:58:55 PM",
   "Parameters" : [
     {
       "KeyPath" : "attack",

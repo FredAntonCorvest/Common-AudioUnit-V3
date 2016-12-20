@@ -54,4 +54,14 @@
  */
 -(void) savePreset:(NSString*) name havingDescription:(NSString*) description asDefault:(BOOL)isDefault;
 
+/*!
+ @method    initWithComponentDescription:error:
+ @brief     Convenience initializer
+ @param presetFolderName
+    Name of the folder created in the user directory. (OS_MAC target only)
+ @param presetVersion
+    Version of the preset
+ */
+- (instancetype)initWithComponentDescription:(AudioComponentDescription)componentDescription options:(AudioComponentInstantiationOptions)options error:(NSError **)outError presetFolderName:(NSString*) presetFolderName presetVersion:(NSString*) presetVersion;
+
 @end

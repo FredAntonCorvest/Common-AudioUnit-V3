@@ -22,15 +22,7 @@
 
 #import "FacAUAudioUnit.h"
 
-#define FILE_VERSION "1.0"
 #define FILE_EXTENSION "preset"
-#define FILE_FORMAT "FAC_MAGIC_NUMBER"
-
-#if TARGET_OS_IPHONE
-#define PRESETS_FOLDER "presets"
-#elif TARGET_OS_MAC
-#define PRESETS_FOLDER "FAC/App/presets"
-#endif
 
 #pragma mark - FacAUAudioUnit : AUAudioUnit
 
@@ -40,18 +32,31 @@
     NSArray<AUAudioUnitPreset *> *_presets;
     NSArray *_presetsParameters;
     NSString *_documentsPath;
+    NSString *_presetUID;
+    NSString *_presetVersion;
 }
 
 @synthesize factoryPresets = _presets;
 
-- (instancetype)initWithComponentDescription:(AudioComponentDescription)componentDescription options:(AudioComponentInstantiationOptions)options error:(NSError **)outError {
+- (instancetype)initWithComponentDescription:(AudioComponentDescription)componentDescription options:(AudioComponentInstantiationOptions)options error:(NSError **)outError presetFolderName:(NSString*) presetFolderName presetVersion:(NSString*) presetVersion {
     self = [super initWithComponentDescription:componentDescription options:options error:outError];
     
     if (self == nil) {
         return nil;
     }
     
-    _documentsPath = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:@PRESETS_FOLDER];
+    _presetUID = [NSString stringWithFormat:@"%02X%02X", componentDescription.componentManufacturer, componentDescription.componentSubType];
+    _presetVersion = presetVersion;
+    
+    #if TARGET_OS_IPHONE
+    NSString* presetFolder = @"presets";
+    #elif TARGET_OS_MAC
+    NSString* presetFolder = [NSString stringWithFormat:@"%@/presets", presetFolderName];
+    #endif
+    
+    _documentsPath = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:presetFolder];
+    // WARNING: When you use the App you get the folder Users/YourUserName/... BUT when you use a host (logic...) you get /Users/YourUserName/Library/Containers/YourExtensionBundleId/...
+    // Example: /Users/Name/Library/Containers/com.name.AppOSX.AppExtensionOSX/Data/Documents/
     
     #if TARGET_OS_MAC
     NSError * error = nil;
@@ -93,10 +98,10 @@
             return false;
         }
         
-        NSString* fileFormat = [dictionary objectForKey:@"Format"];
+        NSString* uid = [dictionary objectForKey:@"UID"];
         
-        if (![fileFormat isEqualToString:@FILE_FORMAT]) {
-            NSLog(@"[FacAUAudioUnit::loadPresets] Invalid file format %@ (%@ required)", fileFormat, @FILE_FORMAT);
+        if (![uid isEqualToString:_presetUID]) {
+            NSLog(@"[FacAUAudioUnit::loadPresets] Invalid UID %@ (%@ required)", uid, _presetUID);
             return false;
         }
         
@@ -139,8 +144,8 @@
                                  name, @"Name",
                                  description, @"Description",
                                  [NSNumber numberWithBool:isDefault] , @"IsDefault",
-                                 @FILE_VERSION, @"Version",
-                                 @FILE_FORMAT, @"Format",
+                                 _presetVersion, @"Version",
+                                 _presetUID, @"UID",
                                  [NSDateFormatter localizedStringFromDate:[NSDate date]
                                                                 dateStyle:NSDateFormatterMediumStyle
                                                                 timeStyle:NSDateFormatterMediumStyle], @"Date",
